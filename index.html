@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Milo Says...</title>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      padding: 2rem;
+    }
+    h1 {
+      margin-bottom: 1rem;
+    }
+    input[type="text"] {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border-radius: 4px;
+      border: none;
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 1rem;
+    }
+    button {
+      padding: 0.5rem 1.5rem;
+      font-size: 1rem;
+      background: #f067a6;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+    }
+    video {
+      margin-top: 2rem;
+      max-width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>Milo Says...</h1>
+  <input type="text" id="message" placeholder="Type your message here...">
+  <button onclick="sendMessage()">Send</button>
+  <video id="miloVideo" controls autoplay></video>
+
+  <script>
+    async function sendMessage() {
+      const message = document.getElementById('message').value;
+      if (!message) return;
+
+      const webhookURL = 'https://hook.eu2.make.com/uum58g2f3wx8da59iu8qnewvmqcbmid7?message=' + encodeURIComponent(message);
+      try {
+        const response = await fetch(webhookURL);
+        const result = await response.json();
+        const video = document.getElementById('miloVideo');
+        video.src = result.video || result.result_url || result.result;
+      } catch (err) {
+        console.error('Error:', err);
+      }
+    }
+  </script>
+</body>
+</html>
