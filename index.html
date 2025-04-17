@@ -12,13 +12,20 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       height: 100vh;
       margin: 0;
       padding: 2rem;
     }
     h1 {
       margin-bottom: 1rem;
+    }
+    img {
+      width: 280px;
+      height: auto;
+      border-radius: 50%;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+      margin-bottom: 1.5rem;
     }
     input[type="text"] {
       padding: 0.5rem 1rem;
@@ -29,6 +36,12 @@
       max-width: 400px;
       margin-bottom: 1rem;
     }
+    .buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
     button {
       padding: 0.5rem 1.5rem;
       font-size: 1rem;
@@ -38,34 +51,56 @@
       color: white;
       cursor: pointer;
     }
-    video {
-      margin-top: 2rem;
-      max-width: 100%;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    audio {
+      margin: 1.5rem 0;
+      width: 100%;
+      max-width: 500px;
     }
   </style>
 </head>
 <body>
   <h1>Milo Says...</h1>
+  <img src="https://media.sellfy.store/images/Ym4XIvuc/22Lp/ChatGPT_Image_Apr_17_2025_12_45_28_AM.png" alt="Milo's avatar" />
+  <audio id="miloAudio" controls autoplay></audio>
   <input type="text" id="message" placeholder="Type your message here...">
-  <button onclick="sendMessage()">Send</button>
-  <video id="miloVideo" controls autoplay></video>
+  <div class="buttons">
+    <button onclick="sendMessage()">Send</button>
+    <button onclick="startListening()">🎙️ Speak to Milo</button>
+  </div>
 
   <script>
-    async function sendMessage() {
-      const message = document.getElementById('message').value;
+    async function sendMessage(text = null) {
+      const message = text || document.getElementById('message').value;
       if (!message) return;
 
       const webhookURL = 'https://hook.eu2.make.com/uum58g2f3wx8da59iu8qnewvmqcbmid7?message=' + encodeURIComponent(message);
       try {
         const response = await fetch(webhookURL);
         const result = await response.json();
-        const video = document.getElementById('miloVideo');
-        video.src = result.video || result.result_url || result.result;
+        const audio = document.getElementById('miloAudio');
+        audio.src = result.audio_url || result.result || result.voice || '';
       } catch (err) {
         console.error('Error:', err);
       }
+    }
+
+    function startListening() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.start();
+
+      recognition.onresult = (event) => {
+        const speechToText = event.results[0][0].transcript;
+        document.getElementById('message').value = speechToText;
+        sendMessage(speechToText);
+      };
+
+      recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+      };
     }
   </script>
 </body>
