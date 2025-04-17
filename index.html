@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Milo Says...</title>
   <style>
     body {
@@ -59,10 +59,13 @@
   </style>
 </head>
 <body>
+
   <h1>Milo Says...</h1>
   <img src="https://media.sellfy.store/images/Ym4XIvuc/22Lp/ChatGPT_Image_Apr_17_2025_12_45_28_AM.png" alt="Milo's avatar" />
+  
   <audio id="miloAudio" controls autoplay></audio>
-  <input type="text" id="message" placeholder="Type your message here...">
+  <input type="text" id="message" placeholder="Type your message here..." />
+  
   <div class="buttons">
     <button onclick="sendMessage()">Send</button>
     <button onclick="startListening()">🎙️ Speak to Milo</button>
@@ -73,14 +76,20 @@
       const message = text || document.getElementById('message').value;
       if (!message) return;
 
-      const webhookURL = 'https://hook.eu2.make.com/uum58g2f3wx8da59iu8qnewvmqcbmid7?message=' + encodeURIComponent(message);
+      const webhookURL = 'https://hook.eu2.make.com/uum58g2f3wx8da59iu8qnewvmqcbmid7';
       try {
-        const response = await fetch(webhookURL);
+        const response = await fetch(webhookURL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message })
+        });
         const result = await response.json();
-        const audio = document.getElementById('miloAudio');
-        audio.src = result.audio_url || result.result || result.voice || '';
+        const base64 = result.audio_base64;
+        const audio = document.getElementById("miloAudio");
+        audio.src = `data:audio/mpeg;base64,${base64}`;
+        audio.play();
       } catch (err) {
-        console.error('Error:', err);
+        console.error("Error:", err);
       }
     }
 
@@ -103,5 +112,6 @@
       };
     }
   </script>
+
 </body>
 </html>
